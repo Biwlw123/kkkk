@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Выход{% endblock %}
+
+{% block extra_css %}
+<style>
+    .logout-container {
+        max-width: 100%;
+        margin: 30px auto;
+        padding: 30px 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+    .logout-title {
+        color: #343a40;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .logout-message {
+        font-size: 1rem;
+        color: #495057;
+        margin: 25px 0;
+        line-height: 1.5;
+    }
+
+    .logout-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: #6c757d;
+    }
+
+    .login-again-btn {
+        display: inline-block;
+        padding: 14px 30px;
+        background-color: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        margin-top: 15px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .login-again-btn:hover {
+        background-color: #5a6268;
+    }
+
+    .additional-links {
+        margin-top: 25px;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .additional-link {
+        color: #495057;
+        text-decoration: none;
+        font-weight: 500;
+        margin: 0 8px;
+    }
+
+    .additional-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Адаптация для планшетов */
+    @media (min-width: 576px) {
+        .logout-container {
+            max-width: 500px;
+            padding: 40px;
+            margin: 50px auto;
+        }
+        
+        .logout-title {
+            font-size: 2rem;
+        }
+        
+        .logout-message {
+            font-size: 1.1rem;
+        }
+        
+        .logout-icon {
+            font-size: 3.5rem;
+        }
+        
+        .login-again-btn {
+            padding: 16px 35px;
+            font-size: 1.1rem;
+        }
+    }
+
+    /* Адаптация для десктопов */
+    @media (min-width: 768px) {
+        .logout-container {
+            margin: 80px auto;
+            padding: 50px;
+        }
+        
+        .logout-title {
+            font-size: 2.2rem;
+        }
+        
+        .login-again-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="logout-container">
+    <div class="logout-icon">👋</div>
+    <h1 class="logout-title">До встречи!</h1>
+    <p class="logout-message">Вы успешно вышли из системы. Надеемся увидеть вас снова!</p>
+    <a href="{% url 'login' %}" class="login-again-btn">Войти снова</a>
+    
+    <div class="additional-links">
+        <a href="{% url 'main' %}" class="additional-link">На главную</a>
+        <a href="{% url 'signup' %}" class="additional-link">Регистрация</a>
+    </div>
+</div>
+{% endblock %}

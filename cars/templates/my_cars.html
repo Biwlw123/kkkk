@@ -1,0 +1,427 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Мои машины{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cars-container {
+        max-width: 1400px;
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+
+    .cars-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .cars-title {
+        color: #343a40;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .cars-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, #adb5bd, #6c757d);
+        border-radius: 2px;
+    }
+
+    .search-container {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    #search-input {
+        padding: 10px;
+        width: 100%;
+        max-width: 400px;
+        border: 1px solid #ddd;
+        border-radius: 4px 0 0 4px;
+        font-size: 16px;
+    }
+
+    #search-button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    #search-button:hover {
+        background-color: #45a049;
+    }
+
+    .cars-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .car-card {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+    }
+
+    .car-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .car-image-container {
+        height: 180px;
+        overflow: hidden;
+    }
+
+    .car-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .car-card:hover .car-image {
+        transform: scale(1.03);
+    }
+
+    .car-info {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .car-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: #343a40;
+        margin-bottom: 10px;
+    }
+
+    .car-model-year {
+        font-size: 15px;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+
+    .car-details {
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #495057;
+    }
+
+    .add-car-btn {
+        display: block;
+        width: 100%;
+        padding: 16px;
+        background-color: #e9ecef;
+        border: 2px dashed #adb5bd;
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #495057;
+        font-weight: 600;
+        font-size: 16px;
+        margin-top: 30px;
+    }
+
+    .add-car-btn:hover {
+        background-color: #dee2e6;
+        border-color: #6c757d;
+        color: #343a40;
+    }
+
+    .btn-icon {
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 20px;
+        font-size: 16px;
+        display: none;
+    }
+
+    .no-cars {
+        text-align: center;
+        padding: 30px;
+        grid-column: 1/-1;
+        color: #6c757d;
+    }
+
+    .delete-btn {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0.9;
+        transition: opacity 0.3s ease;
+        z-index: 10;
+    }
+
+    .delete-btn:hover {
+        background-color: #c82333;
+        opacity: 1;
+    }
+
+    /* Мобильная адаптация */
+    @media (max-width: 768px) {
+        .cars-title {
+            font-size: 24px;
+        }
+        
+        .cars-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .car-image-container {
+            height: 160px;
+        }
+        
+        .car-name {
+            font-size: 18px;
+        }
+        
+        .car-model-year, .car-details {
+            font-size: 14px;
+        }
+        
+        .add-car-btn {
+            padding: 14px;
+            font-size: 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .cars-container {
+            padding: 0 10px;
+        }
+        
+        .cars-title {
+            font-size: 22px;
+        }
+        
+        .search-container {
+            flex-direction: column;
+        }
+        
+        #search-input {
+            border-radius: 4px;
+            margin-bottom: 10px;
+            max-width: 100%;
+        }
+        
+        #search-button {
+            border-radius: 4px;
+            width: 100%;
+        }
+        
+        .car-card {
+            border-radius: 8px;
+        }
+        
+        .delete-btn {
+            width: 28px;
+            height: 28px;
+            top: 8px;
+            right: 8px;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .cars-title {
+            font-size: 20px;
+        }
+        
+        .car-info {
+            padding: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cars-container">
+    <div class="cars-header">
+        <h1 class="cars-title">Мои машины</h1>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Поиск по марке, модели или госномеру">
+        <button id="search-button">Поиск</button>
+    </div>
+
+    <div class="loading" id="loading">
+        Загрузка автомобилей...
+    </div>
+
+    <div class="cars-grid" id="cars-grid">
+        {% if cars %}
+        {% for car in cars %}
+        <div class="car-card">
+            <button class="delete-btn" onclick="deleteCar({{ car.id }}, this)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M6 6L18 18" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <div class="car-image-container">
+                <a href="{% url 'car_page' car.id %}" style="text-decoration: none;">
+                    {% if car.image %}
+                    <img src="{{ car.image.url }}" alt="{{ car.brand }} {{ car.model }}" class="car-image">
+                    {% else %}
+                    <img src="{% static 'images/default_car.jpg' %}" alt="Автомобиль" class="car-image">
+                    {% endif %}
+                </a>
+            </div>
+            <div class="car-info">
+                <a href="{% url 'car_page' car.id %}" style="text-decoration: none;">
+                    <h3 class="car-name">{{ car.brand }} {{ car.model }}</h3>
+                    <div class="car-model-year">Госномер: {{ car.number }}</div>
+                    <div class="car-model-year">{{ car.release_year }} год</div>
+                    <div class="car-details">Пробег: {{ car.current_mileage }} км</div>
+                    <div class="car-details">Последнее ТО: {{ car.last_inspection_date|date:"d.m.Y" }}</div>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="no-cars">
+            <p>У вас пока нет добавленных автомобилей.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <button class="add-car-btn" onclick="location.href='{% url 'add_car' %}'">
+        <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5V19" stroke="#6c757d" stroke-width="2" stroke-linecap="round" />
+            <path d="M5 12H19" stroke="#6c757d" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        Добавить машину
+    </button>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const carsGrid = document.getElementById('cars-grid');
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        const loadingIndicator = document.getElementById('loading');
+
+        // Функция для выполнения поиска
+        function performSearch() {
+            const query = searchInput.value.trim();
+            loadingIndicator.style.display = 'block';
+
+            const carCards = document.querySelectorAll('.car-card');
+            let found = false;
+
+            carCards.forEach(card => {
+                const carText = card.textContent.toLowerCase();
+                if (carText.includes(query.toLowerCase())) {
+                    card.style.display = 'flex';
+                    found = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (!found && query !== '') {
+                carsGrid.innerHTML = '<div class="no-cars" style="grid-column: 1/-1;"><p>Автомобили не найдены. Попробуйте другой запрос.</p></div>';
+            }
+
+            loadingIndicator.style.display = 'none';
+        }
+
+        // Обработчик поиска
+        searchButton.addEventListener('click', performSearch);
+
+        // Обработчик нажатия Enter в поле поиска
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Сброс поиска при очистке поля
+        searchInput.addEventListener('input', function () {
+            if (searchInput.value === '') {
+                const carCards = document.querySelectorAll('.car-card');
+                carCards.forEach(card => {
+                    card.style.display = 'flex';
+                });
+            }
+        });
+    });
+
+    function deleteCar(carId, button) {
+        if (confirm('Вы уверены, что хотите удалить этот автомобиль?')) {
+            fetch(`/cars/delete/${carId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        button.closest('.car-card').remove();
+
+                        // Если больше нет машин, показываем сообщение
+                        if (document.querySelectorAll('.car-card').length === 0) {
+                            document.getElementById('cars-grid').innerHTML = `
+                            <div class="no-cars" style="grid-column: 1/-1;">
+                                <p>У вас пока нет добавленных автомобилей.</p>
+                            </div>
+                        `;
+                        }
+                    } else {
+                        alert('Ошибка при удалении автомобиля: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Произошла ошибка при удалении автомобиля');
+                });
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,77 @@
+{
+"oil": {
+  "standard_resource": 10000,
+  "wear": 0.0100,
+  "description": "Моторное масло"
+},
+"oil_filter": {
+  "standard_resource": 15000,
+  "wear": 0.0067,
+  "description": "Масляный фильтр"
+},
+"belt": {
+  "standard_resource": 60000,
+  "wear": 0.0017,
+  "description": "Приводной ремень"
+},
+"transmission": {
+  "standard_resource": 60000,
+  "wear": 0.0017,
+  "description": "Трансмиссионное масло"
+},
+"air_filter": {
+  "standard_resource": 20000,
+  "wear": 0.0050,
+  "description": "Воздушный фильтр"
+},
+"cabin_filter": {
+  "standard_resource": 15000,
+  "wear": 0.0067,
+  "description": "Салонный фильтр"
+},
+"fuel_filter": {
+  "standard_resource": 40000,
+  "wear": 0.0025,
+  "description": "Топливный фильтр"
+},
+"coolant": {
+  "standard_resource": 60000,
+  "wear": 0.0017,
+  "description": "Антифриз"
+},
+"spark_plugs": {
+  "standard_resource": 30000,
+  "wear": 0.0033,
+  "description": "Свечи зажигания"
+},
+"brake_fluid": {
+  "standard_resource": 40000,
+  "wear": 0.0025,
+  "description": "Тормозная жидкость"
+},
+"brakes": {
+  "standard_resource": 40000,
+  "wear": 0.0025,
+  "description": "Тормозные колодки"
+},
+"shocks": {
+  "standard_resource": 80000,
+  "wear": 0.0013,
+  "description": "Амортизаторы"
+},
+"steering": {
+  "standard_resource": 80000,
+  "wear": 0.0013,
+  "description": "Рулевое управление"
+},
+"battery": {
+  "standard_resource": 70000,
+  "wear": 0.0014,
+  "description": "Аккумулятор"
+},
+"tires": {
+  "standard_resource": 50000,
+  "wear": 0.0020,
+  "description": "Шины"
+}
+}

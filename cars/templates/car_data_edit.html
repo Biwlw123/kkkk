@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Данные автомобиля{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        color: #444;
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 600;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #555;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        background-color: #f9f9f9;
+        transition: border 0.3s;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    select:focus {
+        border-color: #999;
+        outline: none;
+        background-color: #fff;
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background-color: #666;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .btn-submit:hover {
+        background-color: #555;
+    }
+    .form-row {
+        display: flex;
+        gap: 20px;
+    }
+    .form-row .form-group {
+        flex: 1;
+    }
+    #image-preview {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px dashed #ccc;
+        padding: 10px;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    #image-preview img {
+        max-width: 80%;
+        max-height: 300px;
+        object-fit: contain;
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Введите данные автомобиля</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group">
+                <label for="id_number">Госномер</label>
+                {{ form.number }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="id_brand">Марка</label>
+                {{ form.brand }}
+            </div>
+            <div class="form-group">
+                <label for="id_color">Цвет</label>
+                {{ form.color }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="id_release_year">Год выпуска</label>
+                {{ form.release_year }}
+            </div>
+            <div class="form-group">
+                <label for="id_usage_type">Тип использования</label>
+                {{ form.usage_type }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="id_current_mileage">Текущий пробег (км)</label>
+            {{ form.current_mileage }}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="id_last_inspection_mileage">Пробег последнего ТО (км)</label>
+                {{ form.last_inspection_mileage }}
+            </div>
+            <div class="form-group">
+                <label for="id_last_inspection_date">Дата последнего ТО</label>
+                {{ form.last_inspection_date }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="id_daily_mileage">Средний пробег за день (км)</label>
+                {{ form.daily_mileage }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="id_usage_conditions">Условия использования</label>
+                {{ form.usage_conditions }}
+            </div>
+            <div class="form-group">
+                <label for="id_driving_style">Стиль вождения</label>
+                {{ form.driving_style }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="id_image">Фотография автомобиля</label>
+            </div>
+        </div>
+        <div class="form-row">
+            <div id="image-preview">
+                <img id="preview" src="{{ car.image.url }}" alt="Предпросмотр изображения"/>
+            </div>
+        </div>
+        <button type="submit" class="btn-submit">Сохранить</button>
+    </form>
+</div>
+
+<script>
+    // Получаем элементы
+    const imageInput = document.getElementById('id_image');
+    const previewContainer = document.getElementById('image-preview');
+    const previewImage = document.getElementById('preview');
+
+    // Добавляем обработчик события изменения input
+    imageInput.addEventListener('change', function() {
+        const file = this.files[0];
+        
+        if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+            }
+            
+            reader.readAsDataURL(file);
+        } else {
+            previewImage.src = '#';
+            previewContainer.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

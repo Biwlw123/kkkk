@@ -1,0 +1,708 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Техническое состояние{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Стили для формы оценки */
+    .assessment-container {
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+    }
+
+    .assessment-title {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: #444;
+        text-align: center;
+    }
+
+    .assessment-description {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #666;
+    }
+
+    .component {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .component:last-child {
+        border-bottom: none;
+    }
+
+    .component-title {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+        color: #555;
+        display: flex;
+        align-items: center;
+    }
+
+    .component-title i {
+        margin-right: 10px;
+        color: #4CAF50;
+    }
+
+    .question {
+        margin-bottom: 20px;
+    }
+
+    .question-text {
+        font-weight: 500;
+        margin-bottom: 10px;
+        color: #444;
+    }
+
+    .options-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+    }
+
+    .option-label {
+        display: block;
+        padding: 12px 15px;
+        background-color: #f5f5f5;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+        position: relative;
+    }
+
+    .option-label:hover {
+        background-color: #e9e9e9;
+    }
+
+    .option-input:checked+.option-label {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .option-input {
+        position: absolute;
+        opacity: 0;
+        height: 0;
+        width: 0;
+    }
+
+    .submit-btn {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        display: block;
+        margin: 30px auto 0;
+        transition: background-color 0.3s;
+    }
+
+    .submit-btn:hover {
+        background-color: #3d8b40;
+    }
+
+    @media (max-width: 768px) {
+        .options-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="assessment-container">
+        <h1 class="assessment-title">Экспресс-тест технического состояния</h1>
+        <p class="assessment-description">Ответьте на вопросы о состоянии вашего автомобиля для получения оценки</p>
+
+        <form id="tech-assessment-form" method="post">
+            {% csrf_token %}
+
+            <!-- Моторное масло -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-oil-can"></i> Моторное масло</h3>
+
+                <div class="question">
+                    <p class="question-text">Когда последний раз менялось масло?</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_change" value="100" class="option-input" required>
+                            <span class="option-label">&lt;6 мес</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_change" value="80" class="option-input">
+                            <span class="option-label">6-12 мес</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_change" value="60" class="option-input">
+                            <span class="option-label">1-2 года</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_change" value="40" class="option-input">
+                            <span class="option-label">&gt;2 лет</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Масляный фильтр менялся вместе с моторным маслом?</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_filter_change" value="100" class="option-input" required>
+                            <span class="option-label">Да</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_filter_change" value="40" class="option-input">
+                            <span class="option-label">Нет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_filter_change" value="70" class="option-input">
+                            <span class="option-label">Не уверен</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p class="question-text">Есть ли течи масла?</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_leak" value="100" class="option-input" required>
+                            <span class="option-label">Нет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_leak" value="60" class="option-input">
+                            <span class="option-label">Небольшая течь</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_leak" value="30" class="option-input">
+                            <span class="option-label">Сильная течь</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Масляный фильтр -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-filter"></i> Масляный фильтр</h3>
+                <div class="question">
+                    <p class="question-text">Состояние фильтра по последней диагностике</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_filter" value="100" class="option-input" required>
+                            <span class="option-label">Норма</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_filter" value="70" class="option-input">
+                            <span class="option-label">Незначитиельное загрязнение</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_filter" value="40" class="option-input">
+                            <span class="option-label">Сильное загрязнение</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="oil_filter" value="50" class="option-input">
+                            <span class="option-label">Не проверялся</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Приводной ремень -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-cog"></i> Приводной ремень</h3>
+                <div class="question">
+                    <p class="question-text">Срок эксплуатации</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="belt_age" value="100" class="option-input" required>
+                            <span class="option-label">&lt;2 лет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="belt_age" value="80" class="option-input">
+                            <span class="option-label">2-5 лет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="belt_age" value="50" class="option-input">
+                            <span class="option-label">&gt;5 лет</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="question">
+                    <p class="question-text">Наличие трещин/расслоений</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="belt_condition" value="100" class="option-input" required>
+                            <span class="option-label">Нет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="belt_condition" value="70" class="option-input">
+                            <span class="option-label">Незначительные</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="belt_condition" value="40" class="option-input">
+                            <span class="option-label">Выраженные</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Трансмиссионное масло (МКПП/редуктор) -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-oil-can"></i> Трансмиссионное масло (МКПП/редуктор)</h3>
+                <div class="question">
+                    <p class="question-text">Срок замены</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="transmission_oil" value="100" class="option-input" required>
+                            <span class="option-label">&lt;3 лет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="transmission_oil" value="80" class="option-input">
+                            <span class="option-label">3-5 лет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="transmission_oil" value="50" class="option-input">
+                            <span class="option-label">&gt;5 лет</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="question">
+                    <p class="question-text">Проблемы при переключении</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="transmission_problems" value="100" class="option-input" required>
+                            <span class="option-label">Нет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="transmission_problems" value="80" class="option-input">
+                            <span class="option-label">Редко</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="transmission_problems" value="40" class="option-input">
+                            <span class="option-label">Часто</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Воздушный фильтр -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-wind"></i> Воздушный фильтр</h3>
+                <div class="question">
+                    <p class="question-text">Срок замены</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="air_filter" value="100" class="option-input" required>
+                            <span class="option-label">&lt;1 года</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="air_filter" value="80" class="option-input">
+                            <span class="option-label">1-2 года</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="air_filter" value="50" class="option-input">
+                            <span class="option-label">&gt;2 лет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="air_filter" value="60" class="option-input">
+                            <span class="option-label">Не помню</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Салонный фильтр -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-car-side"></i> Салонный фильтр</h3>
+                <div class="question">
+                    <p class="question-text">Срок замены</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="cabin_filter" value="100" class="option-input" required>
+                            <span class="option-label">&lt;1 года</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="cabin_filter" value="80" class="option-input">
+                            <span class="option-label">1-2 года</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="cabin_filter" value="50" class="option-input">
+                            <span class="option-label">&gt;2 лет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="cabin_filter" value="40" class="option-input">
+                            <span class="option-label">Не менялся</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Топливный фильтр -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-gas-pump"></i> Топливный фильтр</h3>
+                <div class="question">
+                    <p class="question-text">Срок замены</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="fuel_filter_age" value="100" class="option-input" required>
+                            <span class="option-label">&lt;2 лет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="fuel_filter_age" value="80" class="option-input">
+                            <span class="option-label">2-4 года</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="fuel_filter_age" value="50" class="option-input">
+                            <span class="option-label">&gt;4 лет</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="question">
+                    <p class="question-text">Заметен ли рост расхода топлива?</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="fuel_consumption" value="100" class="option-input" required>
+                            <span class="option-label">Нет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="fuel_consumption" value="80" class="option-input">
+                            <span class="option-label">+5-10%</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="fuel_consumption" value="50" class="option-input">
+                            <span class="option-label">&gt;10%</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Антифриз -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-temperature-low"></i> Антифриз</h3>
+                <div class="question">
+                    <p class="question-text">Срок замены</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="coolant_age" value="100" class="option-input" required>
+                            <span class="option-label">&lt;2 лет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="coolant_age" value="80" class="option-input">
+                            <span class="option-label">2-4 года</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="coolant_age" value="50" class="option-input">
+                            <span class="option-label">&gt;4 лет</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="question">
+                    <p class="question-text">Уровень/течи</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="coolant_level" value="100" class="option-input" required>
+                            <span class="option-label">Норма</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="coolant_level" value="70" class="option-input">
+                            <span class="option-label">Ниже min</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="coolant_level" value="40" class="option-input">
+                            <span class="option-label">Заметные течи</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Свечи зажигания -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-bolt"></i> Свечи зажигания</h3>
+                <div class="question">
+                    <p class="question-text">Срок эксплуатации</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="spark_plugs_age" value="100" class="option-input" required>
+                            <span class="option-label">&lt;2 лет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="spark_plugs_age" value="80" class="option-input">
+                            <span class="option-label">2-4 года</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="spark_plugs_age" value="50" class="option-input">
+                            <span class="option-label">&gt;4 лет</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="question">
+                    <p class="question-text">Проблемы с запуском</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="starting_problems" value="100" class="option-input" required>
+                            <span class="option-label">Нет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="starting_problems" value="70" class="option-input">
+                            <span class="option-label">В мороз</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="starting_problems" value="40" class="option-input">
+                            <span class="option-label">Регулярно</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Тормозная жидкость -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-tint"></i> Тормозная жидкость</h3>
+                <div class="question">
+                    <p class="question-text">Срок замены</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="brake_fluid_age" value="100" class="option-input" required>
+                            <span class="option-label">&lt;2 лет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="brake_fluid_age" value="80" class="option-input">
+                            <span class="option-label">2-3 года</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="brake_fluid_age" value="50" class="option-input">
+                            <span class="option-label">&gt;3 лет</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="question">
+                    <p class="question-text">Состояние педали тормоза</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="brake_pedal" value="100" class="option-input" required>
+                            <span class="option-label">Норма</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="brake_pedal" value="70" class="option-input">
+                            <span class="option-label">Мягкая</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="brake_pedal" value="40" class="option-input">
+                            <span class="option-label">Провалы</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Тормозные колодки/диски -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-stop-circle"></i> Тормозные колодки/диски</h3>
+                <div class="question">
+                    <p class="question-text">Срок эксплуатации</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="brakes_age" value="100" class="option-input" required>
+                            <span class="option-label">&lt;1 года</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="brakes_age" value="80" class="option-input">
+                            <span class="option-label">1-2 года</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="brakes_age" value="60" class="option-input">
+                            <span class="option-label">&gt;2 лет</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="question">
+                    <p class="question-text">Звуки/вибрации при торможении</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="brake_noise" value="100" class="option-input" required>
+                            <span class="option-label">Нет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="brake_noise" value="70" class="option-input">
+                            <span class="option-label">Скрип</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="brake_noise" value="40" class="option-input">
+                            <span class="option-label">Вибрация</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Амортизаторы/стойки -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-car-crash"></i> Амортизаторы/стойки</h3>
+                <div class="question">
+                    <p class="question-text">Срок замены</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="shocks_age" value="100" class="option-input" required>
+                            <span class="option-label">&lt;5 лет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="shocks_age" value="80" class="option-input">
+                            <span class="option-label">5-7 лет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="shocks_age" value="60" class="option-input">
+                            <span class="option-label">&gt;7 лет</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="question">
+                    <p class="question-text">Течи/стуки</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="shocks_condition" value="100" class="option-input" required>
+                            <span class="option-label">Нет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="shocks_condition" value="70" class="option-input">
+                            <span class="option-label">Незначит.</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="shocks_condition" value="40" class="option-input">
+                            <span class="option-label">Выраженные</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Рулевое управление -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-car-side"></i> Рулевое управление</h3>
+                <div class="question">
+                    <p class="question-text">Люфт руля</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="steering_play" value="100" class="option-input" required>
+                            <span class="option-label">Нет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="steering_play" value="80" class="option-input">
+                            <span class="option-label">&lt;1 см</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="steering_play" value="50" class="option-input">
+                            <span class="option-label">&gt;1 см</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="question">
+                    <p class="question-text">Вибрация на скорости >80 км/ч</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="steering_vibration" value="100" class="option-input" required>
+                            <span class="option-label">Нет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="steering_vibration" value="80" class="option-input">
+                            <span class="option-label">Редко</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="steering_vibration" value="40" class="option-input">
+                            <span class="option-label">Часто</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Аккумулятор -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-battery-three-quarters"></i> Аккумулятор</h3>
+                <div class="question">
+                    <p class="question-text">Возраст</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="battery_age" value="100" class="option-input" required>
+                            <span class="option-label">&lt;2 лет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="battery_age" value="80" class="option-input">
+                            <span class="option-label">2-4 года</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="battery_age" value="50" class="option-input">
+                            <span class="option-label">&gt;4 лет</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="question">
+                    <p class="question-text">Проблемы с запуском</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="battery_problems" value="100" class="option-input" required>
+                            <span class="option-label">Нет</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="battery_problems" value="70" class="option-input">
+                            <span class="option-label">В мороз</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="battery_problems" value="40" class="option-input">
+                            <span class="option-label">Регулярно</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шины -->
+            <div class="component">
+                <h3 class="component-title"><i class="fas fa-tire"></i> Шины</h3>
+                <div class="question">
+                    <p class="question-text">Глубина протектора</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="tread_depth" value="100" class="option-input" required>
+                            <span class="option-label">&gt;4 мм</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="tread_depth" value="80" class="option-input">
+                            <span class="option-label">3-4 мм</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="tread_depth" value="60" class="option-input">
+                            <span class="option-label">2-3 мм</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="tread_depth" value="30" class="option-input">
+                            <span class="option-label">&lt;2 мм</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="question">
+                    <p class="question-text">Балансировка</p>
+                    <div class="options-grid">
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="tire_balance" value="100" class="option-input" required>
+                            <span class="option-label">Норма</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="tire_balance" value="70" class="option-input">
+                            <span class="option-label">Незначит. вибрация</span>
+                        </label>
+                        <label class="option-label-wrapper">
+                            <input type="radio" name="tire_balance" value="40" class="option-input">
+                            <span class="option-label">Сильная вибрация</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Отправить результаты</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

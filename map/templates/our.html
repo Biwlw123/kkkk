@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Антоненко Никита - Резюме{% endblock %}
+
+{% block extra_css %}
+<style>
+    .resume-body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 100%;
+        margin: 0;
+        padding: 15px;
+        background-color: #f5f5f5;
+    }
+    
+    .resume-container {
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .resume-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .resume-photo-container {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-bottom: 15px;
+        border: 2px solid #bdbdbd;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .resume-photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .resume-header-text {
+        text-align: center;
+    }
+    
+    .resume-title {
+        color: #424242;
+        margin-bottom: 5px;
+        font-size: 22px;
+    }
+    
+    .resume-subtitle {
+        color: #616161;
+        font-size: 14px;
+    }
+    
+    .resume-section-title {
+        color: #616161;
+        margin-top: 25px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 18px;
+    }
+    
+    .resume-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .resume-list-item {
+        background: #f9f9f9;
+        margin-bottom: 12px;
+        padding: 15px;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .resume-highlight {
+        font-weight: bold;
+        color: #424242;
+        background-color: #e0e0e0;
+        padding: 1px 4px;
+        border-radius: 3px;
+    }
+    
+    .resume-strong {
+        color: #424242;
+        font-weight: 600;
+    }
+    
+    .resume-section {
+        margin-bottom: 25px;
+    }
+
+    /* Адаптация для планшетов и десктопов */
+    @media (min-width: 768px) {
+        .resume-body {
+            padding: 30px;
+        }
+        
+        .resume-container {
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .resume-header {
+            flex-direction: row;
+            text-align: left;
+            align-items: center;
+        }
+        
+        .resume-photo-container {
+            width: 150px;
+            height: 150px;
+            margin-right: 30px;
+            margin-bottom: 0;
+        }
+        
+        .resume-header-text {
+            text-align: left;
+        }
+        
+        .resume-title {
+            font-size: 28px;
+        }
+        
+        .resume-subtitle {
+            font-size: 16px;
+        }
+        
+        .resume-section-title {
+            font-size: 22px;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .resume-list-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="resume-body">
+    <div class="resume-container">
+        <headerr class="resume-header">
+            <div class="resume-photo-container">
+                <img src="{% static 'images/1.png' %}" alt="Фото Антоненко Никита" class="resume-photo">
+            </div>
+            <div class="resume-header-text">
+                <h1 class="resume-title">Антоненко Никита</h1>
+                <p class="resume-subtitle">Студент института Искусственного Интеллекта РТУ МИРЭА</p>
+            </div>
+        </headerr>
+
+        <section class="resume-section">
+            <h2 class="resume-section-title">Квалификация</h2>
+            <ul class="resume-list">
+                <li class="resume-list-item">Студент института Искусственного Интеллекта РТУ МИРЭА</li>
+                <li class="resume-list-item">Больше <span class="resume-highlight">2 лет</span> опыта проектной деятельности и создано более <span class="resume-highlight">3 проектов</span></li>
+                <li class="resume-list-item"><span class="resume-highlight">Победитель</span> конкурса грантов Skolkovo на 8.000.000 рублей</li>
+                <li class="resume-list-item"><span class="resume-highlight">Призер</span> конференций по проектной деятельности</li>
+            </ul>
+        </section>
+
+        <section class="resume-section">
+            <h2 class="resume-section-title">Достижения</h2>
+            <ul class="resume-list">
+                <li class="resume-list-item"><strong class="resume-strong">Грант Skolkovo:</strong> Выиграл конкурс на 8 миллионов рублей для реализации инновационного проекта</li>
+                <li class="resume-list-item"><strong class="resume-strong">Конференции:</strong> Неоднократный призер научных и проектных конференций</li>
+                <li class="resume-list-item"><strong class="resume-strong">Опыт:</strong> Более 3 успешно реализованных проектов за 2 года</li>
+            </ul>
+        </section>
+
+        <section class="resume-section">
+            <h2 class="resume-section-title">Образование</h2>
+            <ul class="resume-list">
+                <li class="resume-list-item"><strong class="resume-strong">РТУ МИРЭА</strong> - Институт Искусственного Интеллекта (настоящее время)</li>
+            </ul>
+        </section>
+    </div>
+</div>
+{% endblock %}

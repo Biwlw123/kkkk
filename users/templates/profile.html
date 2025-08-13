@@ -1,0 +1,375 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Мой профиль{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 1200px;
+        margin: 40px auto;
+        gap: 30px;
+        padding: 0 15px;
+    }
+    
+    .side-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 280px;
+    }
+    
+    .profile-container {
+        width: 600px;
+        padding: 30px;
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 30px;
+        position: relative;
+    }
+
+    .profile-title {
+        color: #343a40;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .profile-title::after {
+        content: "";
+        position: absolute;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #adb5bd, #6c757d);
+        border-radius: 2px;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6c757d, #495057);
+        color: white;
+        font-size: 40px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        border: 4px solid #f8f9fa;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-info {
+        background-color: #e9ecef;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+
+    .info-item {
+        display: flex;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #dee2e6;
+        flex-wrap: wrap;
+    }
+
+    .info-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #495057;
+        width: 100%;
+        font-size: 15px;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        color: #212529;
+        width: 100%;
+        font-size: 15px;
+    }
+
+    .profile-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .profile-btn, .side-btn {
+        padding: 15px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        background-color: #e9ecef;
+        color: #495057;
+        border: 1px solid #dee2e6;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .side-btn:hover {
+        background-color: #dee2e6;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-content {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        width: 100%;
+    }
+
+    .btn-icon {
+        width: 22px;
+        height: 22px;
+        margin-right: 10px;
+        color: #6c757d;
+    }
+
+    .btn-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #343a40;
+    }
+
+    .btn-description {
+        font-size: 13px;
+        color: #6c757d;
+        text-align: left;
+        line-height: 1.4;
+    }
+
+    .edit-btn {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .edit-btn:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .logout-btn {
+        background-color: transparent;
+        color: #dc3545;
+        border: 2px solid #dc3545;
+        flex: 1;
+        min-width: 200px;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .logout-btn:hover {
+        background-color: #dc3545;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 1024px) {
+        .profile-wrapper {
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .side-buttons {
+            width: 100%;
+            max-width: 600px;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        
+        .side-btn {
+            width: calc(50% - 10px);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .profile-wrapper {
+            margin: 20px auto;
+            gap: 15px;
+        }
+        
+        .profile-container, .side-buttons {
+            width: 100%;
+            padding: 20px;
+        }
+        
+        .side-btn {
+            width: 100%;
+        }
+        
+        .profile-title {
+            font-size: 24px;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 32px;
+        }
+        
+        .info-item {
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .info-label, .info-value {
+            width: 100%;
+        }
+        
+        .profile-actions {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .edit-btn, .logout-btn {
+            width: 100%;
+            min-width: auto;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .profile-container {
+            padding: 15px;
+        }
+        
+        .profile-title {
+            font-size: 22px;
+        }
+        
+        .btn-title {
+            font-size: 15px;
+        }
+        
+        .btn-description {
+            font-size: 12px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-wrapper">
+    <div class="side-buttons">
+        <a href="{% url 'car_list' %}" class="side-btn">
+            <div class="btn-content">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 17H20C20.5304 17 21.0391 16.7893 21.4142 16.4142C21.7893 16.0391 22 15.5304 22 15V11C22 10.4696 21.7893 9.96086 21.4142 9.58579C21.0391 9.21071 20.5304 9 20 9H19L17 5H7L5 9H4C3.46957 9 2.96086 9.21071 2.58579 9.58579C2.21071 9.96086 2 10.4696 2 11V15C2 15.5304 2.21071 16.0391 2.58579 16.4142C2.96086 16.7893 3.46957 17 4 17H5M19 17V18C19 18.5304 18.7893 19.0391 18.4142 19.4142C18.0391 19.7893 17.5304 20 17 20H16C15.4696 20 14.9609 19.7893 14.5858 19.4142C14.2107 19.0391 14 18.5304 14 18V17H10V18C10 18.5304 9.78929 19.0391 9.41421 19.4142C9.03914 19.7893 8.53043 20 8 20H7C6.46957 20 5.96086 19.7893 5.58579 19.4142C5.21071 19.0391 5 18.5304 5 18V17M19 17H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="btn-title">Мои машины</span>
+            </div>
+            <p class="btn-description">Просмотр и управление вашим автопарком. Добавляйте, редактируйте и отслеживайте состояние ваших автомобилей.</p>
+        </a>
+        
+        <a href="{% url 'ai_list' %}" class="side-btn">
+            <div class="btn-content">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 3V5M15 3V5M9 19V21M15 19V21M5 9H3M5 15H3M21 9H19M21 15H19M7 19H17C18.1046 19 19 18.1046 19 17V7C19 5.89543 18.1046 5 17 5H7C5.89543 5 5 5.89543 5 7V17C5 18.1046 5.89543 19 7 19ZM9 9H15V15H9V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="btn-title">ИИ помощник</span>
+            </div>
+            <p class="btn-description">Интеллектуальный помощник для диагностики проблем и получения рекомендаций по обслуживанию ваших автомобилей.</p>
+        </a>
+        
+        <a href="{% url 'map' %}" class="side-btn">
+            <div class="btn-content">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 8V12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="btn-title">Сервисные функции</span>
+            </div>
+            <p class="btn-description">Дополнительные инструменты для работы с автомобилями: расчет расходов, напоминания о ТО, история обслуживания.</p>
+        </a>
+        
+        <a href="{% url 'our' %}" class="side-btn">
+            <div class="btn-content">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 16V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="btn-title">О проекте</span>
+            </div>
+            <p class="btn-description">Информация о нашем сервисе, контакты поддержки и руководство пользователя.</p>
+        </a>
+    </div>
+    
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {{ user.username|first|upper }}
+            </div>
+            <h1 class="profile-title">Мой профиль</h1>
+        </div>
+        
+        <div class="profile-info">
+            <div class="info-item">
+                <span class="info-label">Имя пользователя:</span>
+                <span class="info-value">{{ user.username }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ user.email }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Telegram:</span>
+                <span class="info-value">{{ user.telegram }}</span>
+            </div>
+        </div>
+        
+        <div class="profile-actions">
+            <a href="{% url 'profile_edit' %}" class="profile-btn edit-btn">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10217 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Редактировать профиль
+            </a>
+            <form action="{% url 'logout' %}" method="post" style="display: inline; width: 50%;">
+                {% csrf_token %}
+                <button type="submit" class="profile-btn logout-btn">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Выйти из аккаунта
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

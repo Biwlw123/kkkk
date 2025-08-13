@@ -1,0 +1,446 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #4b5563;
+        --primary-hover: #374151;
+        --error: #ef4444;
+        --success: #10b981;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-400: #9ca3af;
+        --gray-600: #4b5563;
+        --gray-800: #1f2937;
+    }
+
+    .signup-container {
+        max-width: 480px;
+        margin: 40px auto;
+        padding: 40px;
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        text-align: center;
+    }
+
+    .signup-title {
+        color: var(--gray-800);
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 24px;
+        position: relative;
+    }
+
+    .signup-title::after {
+        content: "";
+        position: absolute;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), #495057);
+        border-radius: 2px;
+    }
+
+    .signup-form {
+        margin-top: 32px;
+        text-align: left;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--gray-800);
+        font-size: 14px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        font-size: 15px;
+        transition: all 0.2s ease;
+        height: 48px;
+        box-sizing: border-box;
+        background-color: white;
+        color: var(--gray-800);
+    }
+
+    .form-input:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .form-input::placeholder {
+        color: var(--gray-400);
+    }
+
+    .input-hint {
+        font-size: 13px;
+        color: var(--gray-600);
+        margin-top: 6px;
+        display: block;
+        line-height: 1.4;
+    }
+
+    .input-error {
+        font-size: 13px;
+        color: var(--error);
+        margin-top: 6px;
+        display: block;
+    }
+
+    .password-toggle-container {
+        position: relative;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 5px;
+        color: var(--gray-400);
+        font-weight: 500;
+        font-size: 13px;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+
+    .toggle-password:hover {
+        color: var(--gray-600);
+    }
+
+    .signup-btn {
+        width: 100%;
+        padding: 14px;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 24px;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .signup-btn:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+    }
+
+    .login-link-container {
+        margin-top: 24px;
+        font-size: 15px;
+        color: var(--gray-600);
+        text-align: center;
+    }
+
+    .login-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .login-link:hover {
+        text-decoration: underline;
+    }
+
+    .form-errors {
+        color: var(--error);
+        background-color: rgba(239, 68, 68, 0.05);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        font-size: 14px;
+        border: 1px solid rgba(239, 68, 68, 0.1);
+        line-height: 1.5;
+    }
+
+    .form-errors p {
+        margin: 6px 0;
+    }
+
+    .input-with-icon {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-400);
+        pointer-events: none;
+    }
+
+    .input-with-icon .form-input {
+        padding-left: 40px;
+    }
+
+    /* Мобильная адаптация */
+    @media (max-width: 768px) {
+        .signup-container {
+            padding: 30px;
+            margin: 20px auto;
+            border-radius: 12px;
+        }
+        
+        .signup-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .signup-title::after {
+            width: 50px;
+            height: 3px;
+            bottom: -10px;
+        }
+        
+        .form-input {
+            padding: 12px 14px;
+            height: 44px;
+            font-size: 14px;
+        }
+        
+        .input-with-icon .form-input {
+            padding-left: 36px;
+        }
+        
+        .input-icon {
+            left: 12px;
+            font-size: 14px;
+        }
+        
+        .signup-btn {
+            padding: 12px;
+            font-size: 14px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .signup-container {
+            padding: 24px 20px;
+            margin: 16px;
+            border-radius: 10px;
+        }
+        
+        .signup-title {
+            font-size: 22px;
+        }
+        
+        .signup-form {
+            margin-top: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            font-size: 13px;
+        }
+        
+        .input-hint, .input-error {
+            font-size: 12px;
+        }
+        
+        .login-link-container {
+            font-size: 14px;
+        }
+        
+        .toggle-password {
+            font-size: 12px;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .signup-container {
+            padding: 20px 16px;
+        }
+        
+        .signup-title {
+            font-size: 20px;
+        }
+        
+        .form-input {
+            padding: 10px 12px;
+            height: 42px;
+        }
+        
+        .input-with-icon .form-input {
+            padding-left: 34px;
+        }
+        
+        .signup-btn {
+            margin-top: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <h1 class="signup-title">Присоединиться</h1>
+    
+    {% if form.errors %}
+        <div class="form-errors">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" class="signup-form" novalidate>
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="id_username" class="form-label">Имя пользователя</label>
+            <div class="input-with-icon">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" name="username" id="id_username" class="form-input" 
+                       placeholder="Ваше уникальное имя" required
+                       minlength="3" maxlength="30"
+                       pattern="^[a-zA-Z0-9_]+$">
+            </div>
+            <span class="input-hint">Только буквы, цифры и подчеркивание. 3-30 символов.</span>
+            {% if form.username.errors %}
+                <span class="input-error">{{ form.username.errors.0 }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_email" class="form-label">Электронная почта</label>
+            <div class="input-with-icon">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" name="email" id="id_email" class="form-input" 
+                       placeholder="example@mail.com" required>
+            </div>
+            <span class="input-hint">Мы отправим на него подтверждение.</span>
+            {% if form.email.errors %}
+                <span class="input-error">{{ form.email.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_telegram" class="form-label">Telegram</label>
+            <div class="input-with-icon">
+                <i class="fab fa-telegram input-icon"></i>
+                <input type="text" name="telegram" id="id_telegram" class="form-input" 
+                       placeholder="@username или +79991234567">
+            </div>
+            <span class="input-hint">Необязательно. Для уведомлений.</span>
+            {% if form.telegram.errors %}
+                <span class="input-error">{{ form.telegram.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_password1" class="form-label">Пароль</label>
+            <div class="password-toggle-container">
+                <div class="input-with-icon">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" name="password1" id="id_password1" class="form-input" 
+                           placeholder="Не менее 8 символов" required
+                           minlength="8">
+                </div>
+                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('id_password1', this)">
+                    <i class="far fa-eye"></i>
+                </button>
+            </div>
+            <span class="input-hint">Минимум 8 символов, включая цифры и буквы.</span>
+            {% if form.password1.errors %}
+                <span class="input-error">{{ form.password1.errors.0 }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_password2" class="form-label">Подтвердите пароль</label>
+            <div class="password-toggle-container">
+                <div class="input-with-icon">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" name="password2" id="id_password2" class="form-input" 
+                           placeholder="Повторите пароль" required>
+                </div>
+                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('id_password2', this)">
+                    <i class="far fa-eye"></i>
+                </button>
+            </div>
+            {% if form.password2.errors %}
+                <span class="input-error">{{ form.password2.errors.0 }}</span>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="signup-btn">
+            <i class="fas fa-user-plus" style="margin-right: 8px;"></i>
+            Создать аккаунт
+        </button>
+    </form>
+    
+    <div class="login-link-container">
+        Уже зарегистрированы? <a href="{% url 'login' %}" class="login-link">Войти</a>
+    </div>
+</div>
+
+<script>
+    function togglePasswordVisibility(inputId, button) {
+        const passwordInput = document.getElementById(inputId);
+        const isPassword = passwordInput.type === 'password';
+        
+        passwordInput.type = isPassword ? 'text' : 'password';
+        button.innerHTML = isPassword ? '<i class="far fa-eye-slash"></i>' : '<i class="far fa-eye"></i>';
+        
+        // Добавляем небольшой эффект при нажатии
+        button.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            button.style.transform = 'scale(1)';
+        }, 100);
+    }
+
+    // Валидация в реальном времени
+    document.addEventListener('DOMContentLoaded', function() {
+        const usernameInput = document.getElementById('id_username');
+        const passwordInput = document.getElementById('id_password1');
+        
+        usernameInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^a-zA-Z0-9_]/g, '');
+        });
+        
+        passwordInput.addEventListener('input', function() {
+            const hint = this.nextElementSibling.nextElementSibling;
+            if (this.value.length > 0 && this.value.length < 8) {
+                hint.style.color = 'var(--error)';
+            } else {
+                hint.style.color = 'var(--gray-600)';
+            }
+        });
+    });
+</script>
+{% endblock %}

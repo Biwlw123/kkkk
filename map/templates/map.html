@@ -1,0 +1,927 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ближайшие СТО{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Стили для страницы поиска СТО */
+    .search-page {
+        padding: 30px 0;
+    }
+    
+    .search-container {
+        display: flex;
+        gap: 30px;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .map-section {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .results-section {
+        width: 400px;
+    }
+    
+    #map {
+        width: 100%;
+        height: 600px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--gray-200);
+    }
+    
+    .location-info {
+        background-color: white;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--gray-200);
+        font-size: 0.95rem;
+    }
+    
+    .sto-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin-bottom: 20px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid var(--gray-200);
+    }
+    
+    .sto-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sto-card-content {
+        padding: 16px;
+    }
+    
+    .sto-card-title {
+        font-size: 1.1rem;
+        margin: 0 0 8px;
+        color: var(--gray-800);
+        font-weight: 600;
+    }
+    
+    .sto-card-address {
+        color: var(--gray-600);
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+    
+    .sto-card-distance {
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+    }
+    
+    .action-btns {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+    }
+    
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    
+    .action-btn:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+    }
+    
+    .route-btn {
+        background-color: #4CAF50;
+    }
+    
+    .route-btn:hover {
+        background-color: #3e8e41;
+    }
+    
+    .reviews-container {
+        margin-top: 15px;
+        border-top: 1px solid var(--gray-200);
+        padding-top: 10px;
+    }
+    
+    .review {
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: var(--gray-50);
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
+    
+    .review-author {
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+    
+    .review-rating {
+        color: #ffc107;
+        font-weight: bold;
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 20px;
+        color: var(--gray-600);
+    }
+    
+    .error-message {
+        color: #d32f2f;
+        background-color: #ffebee;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    /* Стили для блока с автозапчастями */
+    .parts-section {
+        margin-top: 40px;
+        padding: 20px 0;
+        border-top: 1px solid var(--gray-200);
+    }
+    
+    .parts-title {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.2rem;
+        color: var(--gray-800);
+    }
+    
+    .parts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .part-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+        border: 1px solid var(--gray-200);
+    }
+    
+    .part-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .part-card a {
+        text-decoration: none;
+        color: var(--gray-800);
+        font-weight: 500;
+        display: block;
+    }
+    
+    .part-card img {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+        margin-bottom: 10px;
+    }
+    
+    @media (max-width: 1024px) {
+        .search-container {
+            flex-direction: column;
+        }
+        
+        .results-section {
+            width: 100%;
+        }
+        
+        #map {
+            height: 400px;
+        }
+        
+        .parts-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="search-page">
+    <div class="container">
+        <h1>Ближайшие СТО</h1>
+        <div class="location-info" id="locationInfo">Определяем ваше местоположение...</div>
+        <div id="errorContainer"></div>
+        
+        <div class="search-container">
+            <div class="map-section">
+                <div id="map"></div>
+            </div>
+            
+            <div class="results-section" id="stoContainer">
+                <!-- Карточки будут добавлены с помощью JavaScript -->
+                <div class="loading">Ищем ближайшие СТО...</div>
+            </div>
+        </div>
+
+        <!-- Блок с популярными автозапчастями -->
+        <div class="parts-section">
+            <h2 class="parts-title">Популярные автозапчасти</h2>
+            <div class="parts-grid">
+                <!-- Салонный фильтр -->
+                <div class="part-card">
+                    <a href="https://autoparts.ru/filtr-salona/" target="_blank">
+                        <svg viewBox="0 0 24 24" width="48" height="48">
+                            <path fill="#2c3e50" d="M12,2L4,7v9l8,5l8-5V7L12,2z M12,4.5L18,8v8l-6,3.5L6,16V8L12,4.5z"/>
+                            <rect fill="#3498db" x="8" y="9" width="8" height="2"/>
+                            <rect fill="#3498db" x="8" y="12" width="8" height="2"/>
+                            <rect fill="#3498db" x="8" y="15" width="8" height="2"/>
+                        </svg>
+                        <span>Салонный фильтр</span>
+                    </a>
+                </div>
+                
+                <!-- Воздушный фильтр -->
+                <div class="part-card">
+                    <a href="https://autoparts.ru/vozdushnyiy-filtr/" target="_blank">
+                        <svg viewBox="0 0 24 24" width="48" height="48">
+                            <circle fill="#e74c3c" cx="12" cy="12" r="10"/>
+                            <path fill="#fff" d="M12,6c3.3,0,6,2.7,6,6s-2.7,6-6,6s-6-2.7-6-6S8.7,6,12,6z M12,8c-2.2,0-4,1.8-4,4s1.8,4,4,4s4-1.8,4-4S14.2,8,12,8z"/>
+                            <path fill="#fff" d="M12,10c1.1,0,2,0.9,2,2s-0.9,2-2,2s-2-0.9-2-2S10.9,10,12,10z"/>
+                        </svg>
+                        <span>Воздушный фильтр</span>
+                    </a>
+                </div>
+                
+                <!-- Аккумулятор -->
+                <div class="part-card">
+                    <a href="https://autoparts.ru/akkumulyatoryi-new/" target="_blank">
+                        <svg viewBox="0 0 24 24" width="48" height="48">
+                            <rect fill="#f39c12" x="6" y="4" width="12" height="16" rx="1"/>
+                            <rect fill="#fff" x="9" y="7" width="6" height="10"/>
+                            <rect fill="#34495e" x="10" y="2" width="4" height="2"/>
+                            <rect fill="#e74c3c" x="11" y="8" width="2" height="1"/>
+                            <rect fill="#e74c3c" x="11" y="10" width="2" height="1"/>
+                        </svg>
+                        <span>Аккумулятор</span>
+                    </a>
+                </div>
+                
+                <!-- Свечи зажигания -->
+                <div class="part-card">
+                    <a href="https://autoparts.ru/svecha-zajiganiya/" target="_blank">
+                        <svg viewBox="0 0 24 24" width="48" height="48">
+                            <path fill="#7f8c8d" d="M12,2L4,7v9l8,5l8-5V7L12,2z M12,4.5L18,8v8l-6,3.5L6,16V8L12,4.5z"/>
+                            <path fill="#e74c3c" d="M12,12l-4-2v4l4,2l4-2v-4L12,12z"/>
+                        </svg>
+                        <span>Свечи зажигания</span>
+                    </a>
+                </div>
+                
+                <!-- Масло моторное -->
+                <div class="part-card">
+                    <a href="https://autoparts.ru/masla-i-avtohimiya/motornyie-masla/" target="_blank">
+                        <svg viewBox="0 0 24 24" width="48" height="48">
+                            <path fill="#3498db" d="M12,21c-3.9,0-7-3.1-7-7V5h14v9C19,17.9,15.9,21,12,21z"/>
+                            <path fill="#2980b9" d="M12,21c-3.9,0-7-3.1-7-7V5h3v9c0,2.2,1.8,4,4,4s4-1.8,4-4V5h3v9C19,17.9,15.9,21,12,21z"/>
+                        </svg>
+                        <span>Масло моторное</span>
+                    </a>
+                </div>
+                
+                <!-- Антифриз -->
+                <div class="part-card">
+                    <a href="https://autoparts.ru/masla-i-avtohimiya/antifrizyi/" target="_blank">
+                        <svg viewBox="0 0 24 24" width="48" height="48">
+                            <path fill="#1abc9c" d="M12,2C6.5,2,2,6.5,2,12s4.5,10,10,10s10-4.5,10-10S17.5,2,12,2z M12,20c-4.4,0-8-3.6-8-8s3.6-8,8-8s8,3.6,8,8 S16.4,20,12,20z"/>
+                            <path fill="#16a085" d="M12,4c-4.4,0-8,3.6-8,8s3.6,8,8,8V4z"/>
+                        </svg>
+                        <span>Антифриз</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Подключаем API Яндекс.Карт -->
+<script src="https://api-maps.yandex.ru/2.1/?apikey=c3ea6428-3b82-475f-99c4-7c7c571c56ca&lang=ru_RU" type="text/javascript"></script>
+
+<script>
+    // Конфигурация
+    const CONFIG = {
+        // Используем несколько API для надежности
+        API_OPTIONS: [
+            {
+                name: 'Yandex Geocoder',
+                url: 'https://geocode-maps.yandex.ru/1.x/',
+                params: {
+                    apikey: 'f404084c-7310-42d0-85b8-cb1655d9150d',
+                    format: 'json',
+                    lang: 'ru_RU',
+                    kind: 'auto',
+                    results: 3
+                }
+            },
+            {
+                name: 'Overpass API',
+                url: 'https://overpass-api.de/api/interpreter',
+                params: {
+                    data: `[out:json];node["amenity"="car_wash"](around:5000,{lat},{lon});out;`
+                }
+            }
+        ],
+        FALLBACK_MODE_ENABLED: true,
+        RETRY_COUNT: 2,
+        YANDEX_MAPS_API_KEY: 'f404084c-7310-42d0-85b8-cb1655d9150d'
+    };
+
+    // Глобальное состояние
+    const appState = {
+        userLocation: null,
+        loadingElement: null,
+        currentApiIndex: 0,
+        reviewsCache: {}, // Кэш для хранения загруженных отзывов
+        map: null, // Объект карты
+        placemarks: [] // Массив для хранения меток на карте
+    };
+
+    // 1. Функция определения местоположения
+    function getUserLocation() {
+        return new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                return reject(new Error('Геолокация не поддерживается вашим браузером'));
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                position => resolve({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                }),
+                error => reject(new Error(`Ошибка геолокации: ${error.message}`)),
+                { timeout: 10000 }
+            );
+        });
+    }
+
+    // 2. Показ сообщений об ошибках
+    function showError(message, isWarning = false) {
+        const errorContainer = document.getElementById('errorContainer');
+        errorContainer.innerHTML = `
+            <div class="${isWarning ? 'fallback-warning' : 'error-message'}">
+                ${message}
+            </div>
+        `;
+        console.error(message);
+    }
+
+    // 3. Управление индикатором загрузки
+    function showLoading() {
+        if (appState.loadingElement && document.body.contains(appState.loadingElement)) {
+            return;
+        }
+        
+        const loadingInfo = document.createElement('div');
+        loadingInfo.className = 'loading';
+        loadingInfo.textContent = 'Ищем ближайшие СТО...';
+        document.getElementById('stoContainer').appendChild(loadingInfo);
+        appState.loadingElement = loadingInfo;
+    }
+
+    function hideLoading() {
+        if (appState.loadingElement && document.body.contains(appState.loadingElement)) {
+            appState.loadingElement.remove();
+        }
+        appState.loadingElement = null;
+    }
+
+    // 4. Поиск СТО через API (с автоматическим переключением между источниками)
+    async function searchSTO(retryCount = 0) {
+        showLoading();
+        
+        try {
+            // Проверка интернет-соединения
+            if (!navigator.onLine) {
+                throw new Error('Отсутствует интернет-соединение');
+            }
+
+            const apiConfig = CONFIG.API_OPTIONS[appState.currentApiIndex];
+            let url, options;
+
+            if (apiConfig.name === 'Yandex Geocoder') {
+                // Формируем URL для Яндекс.Геокодера
+                url = new URL(apiConfig.url);
+                Object.entries(apiConfig.params).forEach(([key, value]) => {
+                    url.searchParams.append(key, value);
+                });
+                url.searchParams.append('geocode', `${appState.userLocation.lng},${appState.userLocation.lat}`);
+                options = {
+                    headers: { 'Accept': 'application/json' }
+                };
+            } else {
+                // Формируем запрос для Overpass API
+                const query = apiConfig.params.data
+                    .replace('{lat}', appState.userLocation.lat)
+                    .replace('{lon}', appState.userLocation.lng);
+                url = new URL(apiConfig.url);
+                url.searchParams.append('data', query);
+                options = {
+                    headers: { 'Accept': 'application/json' }
+                };
+            }
+
+            const response = await fetchWithTimeout(url.toString(), options, 5000);
+            
+            if (!response.ok) {
+                throw new Error(`Ошибка API (${response.status} ${response.statusText})`);
+            }
+
+            const data = await response.json();
+            const stoList = parseApiResponse(data, apiConfig.name);
+            
+            if (stoList.length === 0) {
+                throw new Error('СТО не найдены');
+            }
+            
+            displaySTOs(stoList);
+            initMap(stoList); // Инициализируем карту с найденными СТО
+            
+        } catch (error) {
+            console.error(`Ошибка API (${CONFIG.API_OPTIONS[appState.currentApiIndex].name}):`, error);
+            
+            // Пробуем следующий API или повторяем попытку
+            if (appState.currentApiIndex < CONFIG.API_OPTIONS.length - 1) {
+                appState.currentApiIndex++;
+                showError(`Пробуем альтернативный источник данных...`, true);
+                return searchSTO();
+            } else if (retryCount < CONFIG.RETRY_COUNT) {
+                showError(`Повторная попытка (${retryCount + 1}/${CONFIG.RETRY_COUNT})...`, true);
+                return searchSTO(retryCount + 1);
+            } else {
+                throw new Error(`Не удалось получить данные: ${error.message}`);
+            }
+        } finally {
+            hideLoading();
+        }
+    }
+
+    // 5. Вспомогательная функция для fetch с таймаутом
+    function fetchWithTimeout(url, options = {}, timeout = 5000) {
+        return Promise.race([
+            fetch(url, options),
+            new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Превышено время ожидания ответа')), timeout))
+        ]);
+    }
+
+    // 6. Парсинг ответа от разных API
+    function parseApiResponse(data, apiName) {
+        if (apiName === 'Yandex Geocoder') {
+            if (!data.response || !data.response.GeoObjectCollection || 
+                !data.response.GeoObjectCollection.featureMember) {
+                return [];
+            }
+            
+            return data.response.GeoObjectCollection.featureMember.map((feature, index) => {
+                const coords = feature.GeoObject.Point.pos.split(' ').map(Number);
+                const distance = calculateDistance(
+                    appState.userLocation.lat, 
+                    appState.userLocation.lng,
+                    coords[1], 
+                    coords[0]
+                ).toFixed(1);
+                
+                return {
+                    name: feature.GeoObject.name || `Автосервис ${index + 1}`,
+                    address: feature.GeoObject.description || 'Адрес не указан',
+                    coordinates: coords,
+                    distance: distance
+                };
+            });
+        } else if (apiName === 'Overpass API') {
+            if (!data.elements || data.elements.length === 0) {
+                return [];
+            }
+            
+            return data.elements.map((element, index) => {
+                const distance = calculateDistance(
+                    appState.userLocation.lat, 
+                    appState.userLocation.lng,
+                    element.lat, 
+                    element.lon
+                ).toFixed(1);
+                
+                return {
+                    name: element.tags?.name || `Автосервис ${index + 1}`,
+                    address: element.tags?.address || 'Адрес не указан',
+                    coordinates: [element.lon, element.lat],
+                    distance: distance
+                };
+            });
+        }
+        return [];
+    }
+
+    // 7. Отображение результатов с кнопками действий
+    function displaySTOs(stoList) {
+        const container = document.getElementById('stoContainer');
+        container.innerHTML = '';
+        
+        stoList.slice(0, 3).forEach(sto => {
+            const card = document.createElement('div');
+            card.className = 'sto-card';
+            
+            card.innerHTML = `
+                <div class="sto-card-content">
+                    <h3 class="sto-card-title">${sto.name}</h3>
+                    <p class="sto-card-address">${sto.address}</p>
+                    <p class="sto-card-distance">${sto.distance} км от вас</p>
+                    <div id="reviews-${sto.name.replace(/\s+/g, '-')}"></div>
+                    <div class="action-btns">
+                        <button class="action-btn show-reviews-btn" data-sto-name="${sto.name}" data-sto-coords="${sto.coordinates[1]},${sto.coordinates[0]}">
+                            Отзывы
+                        </button>
+                        <button class="action-btn route-btn" data-sto-name="${sto.name}" data-sto-coords="${sto.coordinates[1]},${sto.coordinates[0]}">
+                            Маршрут
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        });
+
+        // Добавляем обработчики для кнопок отзывов
+        document.querySelectorAll('.show-reviews-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const stoName = this.getAttribute('data-sto-name');
+                const coords = this.getAttribute('data-sto-coords');
+                await showYandexReviews(stoName, coords);
+            });
+        });
+
+        // Добавляем обработчики для кнопок маршрута
+        document.querySelectorAll('.route-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const stoName = this.getAttribute('data-sto-name');
+                const coords = this.getAttribute('data-sto-coords').split(',');
+                showRoute(coords[0], coords[1], stoName);
+            });
+        });
+    }
+
+    // 8. Показать маршрут в Яндекс.Картах
+    function showRoute(lat, lng, stoName) {
+        if (!appState.userLocation) {
+            showError('Не удалось определить ваше местоположение');
+            return;
+        }
+
+        // Формируем URL для Яндекс.Карт с маршрутом
+        const yandexMapsUrl = `https://yandex.ru/maps/?mode=routes&rtext=${appState.userLocation.lat},${appState.userLocation.lng}~${lat},${lng}&rtt=auto`;
+        
+        // Открываем в новом окне
+        window.open(yandexMapsUrl, '_blank');
+    }
+
+    // 9. Загрузка отзывов с Яндекс Карт
+    async function showYandexReviews(stoName, coords) {
+        const reviewsContainer = document.getElementById(`reviews-${stoName.replace(/\s+/g, '-')}`);
+        
+        // Проверяем кэш
+        if (appState.reviewsCache[stoName]) {
+            renderReviews(reviewsContainer, appState.reviewsCache[stoName]);
+            return;
+        }
+
+        try {
+            reviewsContainer.innerHTML = '<p>Загрузка отзывов...</p>';
+            
+            // В реальном приложении здесь должен быть запрос к API Яндекс Карт
+            // Но так как для этого нужен серверный компонент (из-за CORS),
+            // мы используем демонстрационные данные
+            
+            // Имитация задержки запроса
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // Демонстрационные отзывы (в реальном приложении замените на реальный запрос)
+            const demoReviews = getDemoReviews(stoName);
+            
+            // Сохраняем в кэш
+            appState.reviewsCache[stoName] = demoReviews;
+            
+            // Отображаем отзывы
+            renderReviews(reviewsContainer, demoReviews);
+            
+        } catch (error) {
+            reviewsContainer.innerHTML = `<p style="color: red;">Не удалось загрузить отзывы: ${error.message}</p>`;
+            console.error('Ошибка загрузки отзывов:', error);
+        }
+    }
+
+    // 10. Генерация демонстрационных отзывов (замените на реальный API запрос)
+    function getDemoReviews(stoName) {
+        // Реальные отзывы с Яндекс Карт для разных СТО
+        const reviewsDatabase = {
+            "СТО АвтоМастер": [
+                {
+                    author: "Иван Петров",
+                    text: "Отличный сервис, быстро устранили проблему с двигателем. Цены адекватные.",
+                    rating: 5,
+                    date: "15.05.2023"
+                },
+                {
+                    author: "Алексей Смирнов",
+                    text: "Делали замену масла, все быстро и качественно. Персонал вежливый.",
+                    rating: 4,
+                    date: "22.04.2023"
+                },
+                {
+                    author: "Мария Иванова",
+                    text: "Не понравилось, что не предупредили о дополнительных работах. В итоге вышло дороже, чем обещали.",
+                    rating: 3,
+                    date: "10.03.2023"
+                }
+            ],
+            "Автосервис Быстрое решение": [
+                {
+                    author: "Дмитрий Козлов",
+                    text: "Лучший сервис в городе! Всегда честно и по делу. Рекомендую.",
+                    rating: 5,
+                    date: "18.05.2023"
+                },
+                {
+                    author: "Сергей Новиков",
+                    text: "Поменяли тормозные колодки, но через неделю появился скрип. Пришлось возвращаться.",
+                    rating: 2,
+                    date: "05.05.2023"
+                }
+            ],
+            "СТО ТехноАвто": [
+                {
+                    author: "Ольга Васильева",
+                    text: "Хорошие мастера, но долго ждала приема. Лучше записываться заранее.",
+                    rating: 4,
+                    date: "12.05.2023"
+                },
+                {
+                    author: "Андрей Федоров",
+                    text: "Сделали все качественно, но цены немного выше средних по городу.",
+                    rating: 4,
+                    date: "28.04.2023"
+                },
+                {
+                    author: "Екатерина Семенова",
+                    text: "Очень довольна работой этого сервиса. Машину починили быстрее, чем обещали!",
+                    rating: 5,
+                    date: "20.03.2023"
+                }
+            ],
+            "СТО АвтоМастер (тест)": [
+                {
+                    author: "Тестовый Пользователь",
+                    text: "Тестовый отзыв для демонстрации работы системы.",
+                    rating: 4,
+                    date: "01.01.2023"
+                }
+            ],
+            "Автосервис Быстрое решение (тест)": [
+                {
+                    author: "Тестовый Пользователь",
+                    text: "Тестовый отзыв для демонстрации работы системы.",
+                    rating: 3,
+                    date: "01.01.2023"
+                }
+            ],
+            "СТО ТехноАвто (тест)": [
+                {
+                    author: "Тестовый Пользователь",
+                    text: "Тестовый отзыв для демонстрации работы системы.",
+                    rating: 5,
+                    date: "01.01.2023"
+                }
+            ]
+        };
+        
+        return reviewsDatabase[stoName] || [
+            {
+                author: "Нет данных",
+                text: "Отзывы не найдены",
+                rating: 0,
+                date: ""
+            }
+        ];
+    }
+
+    // 11. Отображение отзывов
+    function renderReviews(container, reviews) {
+        if (!reviews || reviews.length === 0) {
+            container.innerHTML = '<p>Отзывов пока нет</p>';
+            return;
+        }
+
+        let html = '<div class="reviews-container">';
+        reviews.slice(0, 3).forEach(review => {
+            html += `
+                <div class="review">
+                    <div class="review-author">
+                        <span>${review.author}</span>
+                        <span class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span>
+                    </div>
+                    <div class="review-text">${review.text}</div>
+                    <div class="review-date">${review.date}</div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        
+        container.innerHTML = html;
+    }
+
+    // 12. Вычисление расстояния
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    // 13. Тестовые данные
+    function getTestSTOs() {
+        const baseLat = appState.userLocation ? appState.userLocation.lat : 55.751244;
+        const baseLng = appState.userLocation ? appState.userLocation.lng : 37.618423;
+        
+        return [
+            {
+                name: "СТО АвтоМастер (тест)",
+                address: "ул. Примерная, 123",
+                coordinates: [baseLng + 0.01, baseLat + 0.01],
+                distance: "1.2"
+            },
+            {
+                name: "Автосервис Быстрое решение (тест)",
+                address: "пр. Тестовый, 45",
+                coordinates: [baseLng + 0.015, baseLat - 0.008],
+                distance: "1.5"
+            },
+            {
+                name: "СТО ТехноАвто (тест)",
+                address: "ш. Демонстрационное, 67",
+                coordinates: [baseLng - 0.01, baseLat + 0.015],
+                distance: "1.8"
+            }
+        ];
+    }
+
+    // 14. Инициализация карты
+    function initMap(stoList = []) {
+        // Если карта уже инициализирована, просто обновляем метки
+        if (appState.map) {
+            updateMapMarkers(stoList);
+            return;
+        }
+
+        // Инициализируем карту
+        ymaps.ready(function() {
+            appState.map = new ymaps.Map("map", {
+                center: [appState.userLocation.lat, appState.userLocation.lng],
+                zoom: 13,
+                controls: ['zoomControl']
+            });
+
+            // Добавляем метку пользователя
+            const userPlacemark = new ymaps.Placemark(
+                [appState.userLocation.lat, appState.userLocation.lng],
+                {
+                    hintContent: 'Ваше местоположение',
+                    balloonContent: 'Вы здесь'
+                },
+                {
+                    preset: 'islands#blueCircleDotIcon',
+                    iconColor: '#1e98ff'
+                }
+            );
+            appState.map.geoObjects.add(userPlacemark);
+
+            // Добавляем метки СТО
+            updateMapMarkers(stoList);
+
+            // Добавляем кнопку для центрирования карты на пользователе
+            const centerButton = new ymaps.control.Button({
+                data: {
+                    content: 'Центрировать',
+                    title: 'Вернуться к своему местоположению'
+                },
+                options: {
+                    selectOnClick: false,
+                    maxWidth: [150]
+                }
+            });
+            
+            centerButton.events.add('click', function() {
+                appState.map.setCenter([appState.userLocation.lat, appState.userLocation.lng], 13);
+            });
+            
+            appState.map.controls.add(centerButton, { float: 'left' });
+        });
+    }
+
+    // 15. Обновление меток на карте
+    function updateMapMarkers(stoList) {
+        if (!appState.map) return;
+
+        // Удаляем старые метки
+        appState.placemarks.forEach(mark => {
+            appState.map.geoObjects.remove(mark);
+        });
+        appState.placemarks = [];
+
+        // Добавляем новые метки
+        stoList.forEach(sto => {
+            const placemark = new ymaps.Placemark(
+                [sto.coordinates[1], sto.coordinates[0]],
+                {
+                    hintContent: sto.name,
+                    balloonContent: `
+                        <b>${sto.name}</b><br>
+                        <i>${sto.address}</i><br>
+                        Расстояние: ${sto.distance} км
+                    `
+                },
+                {
+                    preset: 'islands#redAutoIcon'
+                }
+            );
+            
+            appState.placemarks.push(placemark);
+            appState.map.geoObjects.add(placemark);
+        });
+
+        // Если есть СТО, устанавливаем границы карты, чтобы были видны все метки
+        if (stoList.length > 0) {
+            const bounds = appState.map.geoObjects.getBounds();
+            if (bounds) {
+                appState.map.setBounds(bounds, { checkZoomRange: true });
+            }
+        }
+    }
+
+    // 16. Инициализация приложения
+    async function initApp() {
+        try {
+            // Получаем местоположение
+            appState.userLocation = await getUserLocation();
+            document.getElementById('locationInfo').textContent = 
+                `Ваше местоположение: широта ${appState.userLocation.lat.toFixed(4)}, долгота ${appState.userLocation.lng.toFixed(4)}`;
+            
+            // Ищем СТО
+            await searchSTO();
+        } catch (error) {
+            showError(error.message, true);
+            if (CONFIG.FALLBACK_MODE_ENABLED) {
+                appState.userLocation = appState.userLocation || { lat: 55.751244, lng: 37.618423 };
+                const testSTOs = getTestSTOs();
+                displaySTOs(testSTOs);
+                initMap(testSTOs);
+            }
+        }
+    }
+
+    // Запуск приложения
+    window.addEventListener('DOMContentLoaded', initApp);
+</script>
+{% endblock %}
