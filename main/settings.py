@@ -59,12 +59,24 @@ WSGI_APPLICATION = 'main.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'data', 'db.sqlite3'),  # Изменили путь
         'OPTIONS': {
-            'timeout': 20,  # Увеличиваем таймаут для Render
+            'timeout': 30,  # Увеличили таймаут
         }
     }
 }
+
+# Настройки для Render
+if 'RENDER' in os.environ:
+    # Создаем папку data если ее нет
+    DATA_DIR = os.path.join(BASE_DIR, 'data')
+    os.makedirs(DATA_DIR, exist_ok=True)
+    
+    # Даем права на запись
+    os.chmod(DATA_DIR, 0o755)
+    db_path = os.path.join(DATA_DIR, 'db.sqlite3')
+    if os.path.exists(db_path):
+        os.chmod(db_path, 0o666)
 
 # Настройки статики
 STATIC_URL = '/static/'
