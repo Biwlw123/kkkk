@@ -1,11 +1,6 @@
 from django.urls import path
-from .views import main_view
-from django.conf import settings
-from django.conf.urls.static import static
+from . import views
 
 urlpatterns = [
-    path('', main_view, name='main'),
+    path('', views.main_view, name='main'),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,14 +1,11 @@
 #!/bin/bash
 set -e
 
+# Создаем папки для шаблонов
+mkdir -p main/templates/main
+
 # Установка зависимостей
 pip install -r requirements.txt
 
-# Применение миграций
-python manage.py migrate --noinput
-
 # Сбор статики
 python manage.py collectstatic --noinput
-
-# Создание папок
-mkdir -p media staticfiles
